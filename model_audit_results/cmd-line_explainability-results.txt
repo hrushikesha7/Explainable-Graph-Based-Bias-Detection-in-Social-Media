@@ -1,0 +1,65 @@
+(fairvgnn) hrushikesh@Hrushikeshs-MacBook-Air hcat-project-main % python train.py
+Loading region_job_2 dataset from ./dataset/pokec/
+729129
+(66569, 66569)
+torch.Size([66569, 266])
+torch.Size([66569])
+torch.Size([66569])
+torch.Size([500])
+return
+running
+edge_index device: cpu dtype: torch.int64 shape: (2, 1100663)
+num_nodes: 66569
+edge_index min/max: 0 66568
+100%|█████████████████████████████████████████████████████| 600/600 [4:39:32<00:00, 27.95s/it]
+
+[RAW GRAPH] Echo/Polar stats: {'edges_total': 517047, 'intra_edges': 492754, 'inter_edges': 24293, 'p_intra_sens': 0.9530158766997971, 'ei_index_sens': -0.9060317533995942, 'assort_sens': 0.8909489042544235, 'assort_label': 0.03999374051988348, 'p_intra_label': 0.7351091873659454, 'assort_yhat': 0.4508521176660794, 'p_intra_yhat': 0.8239115592973173}
+
+[OPINION POLARIZATION] (from predicted probabilities): {'prob_mean': 0.4297271153160612, 'prob_var': 0.05721663087569862, 'extreme_frac_0.1': 0.10584506301732037, 'extreme_frac_0.2': 0.2880169448241674, 'group_mean_gap': 0.01577253274353424, 'js_div_prob_by_sens': 0.0017695120446000598}
+
+[LEARNED GRAPH - kNN(embeddings)] Echo/Polar stats: {'edges_total': 1077561, 'intra_edges': 982651, 'inter_edges': 94910, 'p_intra_sens': 0.9119214596667845, 'ei_index_sens': -0.823842919333569, 'assort_sens': 0.7838972962613213, 'assort_label': 0.05791335049206665, 'p_intra_label': 0.7749797923273021, 'assort_yhat': 0.9674842111490819, 'p_intra_yhat': 0.9845837033819895}
+auc_roc: 0.7033476313882021
+Acc: 0.6609090909090909
+f1: 0.634313725490196
+parity: 0.0016752718114506626
+equality: 0.009630057573161821
+parity_val: 0.02811238288821133
+equality_val: 0.03465713413836691
+ACC 0.660909
+AUCROC 0.703348
+F1 0.634314
+ACC_sens0 0.663951
+AUCROC_sens0 0.700714
+F1_sens0 0.636297
+ACC_sens1 0.654746
+AUCROC_sens1 0.709170
+F1_sens1 0.630339
+SP 0.028112
+EO 0.034657
+
+[Feature Map] Raw CSV Columns: 279
+[Feature Map] Columns after exclusion: 266
+[Feature Map] Model Tensor Input: 266
+[Feature Map] SUCCESS: Perfect alignment.
+
+[Training Complete. Results Saved.]
+[Starting Explainability Audit...]
+
+[Running Explainability Layer...]
+
+[System] Output folder ready: ./model_audit_results/
+[LLM Layer] Connected to Local Ollama successfully.
+   -> Saved: model_audit_results/audit_1_features.png
+   -> Saved: model_audit_results/audit_2_polarization.png
+   -> Saved: audit_4_amplification.png
+[LLM Layer] Generating Before/After Impact Analysis...
+   -> Saved: model_audit_results/audit_report_comparison.txt
+[LLM Layer] Generating Global Executive Summary...
+   -> Saved: model_audit_results/audit_report_global.txt
+[LLM Layer] Generating Case Study for User 34563...
+   -> Saved: model_audit_results/audit_report_user_34563.txt
+   -> Saved: model_audit_results/audit_3_network.png
+[Dashboard] Exporting JSON files for frontend...
+[Dashboard] Success. 4 JSON files saved.
+
+[Success] All audit files have been saved to: ./model_audit_results/

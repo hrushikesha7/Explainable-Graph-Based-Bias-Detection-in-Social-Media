@@ -1,0 +1,42 @@
+[
+    {
+        "feature": "spanie",
+        "attention_score": 0.326090008020401
+    },
+    {
+        "feature": "nefajcim",
+        "attention_score": 0.3753165304660797
+    },
+    {
+        "feature": "oldies",
+        "attention_score": 0.38560202717781067
+    },
+    {
+        "feature": "cestovanie",
+        "attention_score": 0.39889606833457947
+    },
+    {
+        "feature": "biela",
+        "attention_score": 0.49887561798095703
+    },
+    {
+        "feature": "zelene",
+        "attention_score": 0.5144930481910706
+    },
+    {
+        "feature": "auto-moto sporty",
+        "attention_score": 0.5183132886886597
+    },
+    {
+        "feature": "folk a country",
+        "attention_score": 0.5261885523796082
+    },
+    {
+        "feature": "relation_to_smoking_indicator",
+        "attention_score": 0.5340615510940552
+    },
+    {
+        "feature": "ruzova",
+        "attention_score": 0.5403655767440796
+    }
+]

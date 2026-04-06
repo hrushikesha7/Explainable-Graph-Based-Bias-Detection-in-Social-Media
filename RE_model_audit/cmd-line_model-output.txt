@@ -1,0 +1,115 @@
+(fair_graph) hrushikesh@Hrushikeshs-MacBook-Air RE-hcat-project-main % python train.py
+Loading region_job_2 dataset from ./dataset/pokec/
+729129
+(66569, 66569)
+torch.Size([66569, 266])
+torch.Size([66569])
+torch.Size([66569])
+torch.Size([500])
+   [Data Processing] Dropping 11 columns: ['public', 'completion_percentage', 'gender', 'region', 'AGE', 'spoken_languages_indicator', 'hobbies_indicator', 'I_most_enjoy_good_food_indicator', 'pets_indicator', 'body_type_indicator', 'eye_color_indicator']
+   [Data Processing] New feature dimension: 255
+return
+edge_index device: cpu dtype: torch.int64 shape: (2, 1100663)
+num_nodes: 66569
+edge_index min/max: 0 66568
+100%|███████████████████████████████████████████████████████████████████████████████████████████| 600/600 [3:10:51<00:00, 19.09s/it]
+
+[RAW GRAPH] Echo/Polar stats: {'edges_total': 517047, 'intra_edges': 235792, 'inter_edges': 281255, 'p_intra_sens': 0.4560359116289235, 'ei_index_sens': 0.08792817674215303, 'assort_sens': -0.0881376586594847, 'assort_label': 0.0692304982494196, 'p_intra_label': 0.6117606329792069, 'assort_yhat': 0.2156095122980262, 'p_intra_yhat': 0.862134390103801}
+
+[OPINION POLARIZATION] (from predicted probabilities): {'prob_mean': 0.7879192604967393, 'prob_var': 0.05796088455355685, 'extreme_frac_0.1': 0.47441001066562516, 'extreme_frac_0.2': 0.6830807132449038, 'group_mean_gap': 0.03805605540252355, 'js_div_prob_by_sens': 0.00718930148919471}
+
+)PRE-EXPOSURE METRICS:
+
+[LEARNED GRAPH - kNN(embeddings)] Echo/Polar stats: {'edges_total': 1093555, 'intra_edges': 623018, 'inter_edges': 470537, 'p_intra_sens': 0.5697180297287288, 'ei_index_sens': -0.13943605945745755, 'assort_sens': 0.1393770648066705, 'assort_label': 0.026559956269146267, 'p_intra_label': 0.5866362460050021, 'assort_yhat': 0.9605889081748178, 'p_intra_yhat': 0.9909524440928897}
+
+GNN MODEL RESULTS:
+auc_roc: 0.5631316319359774
+Acc: 0.6569128161990025
+f1: 0.7775440236870812
+parity: 0.051213882477667894
+equality: 0.03944737727061054
+
+[POST-EXPOSURE METRICS]
+statistical_parity 0.046363
+equality_opportunity 0.036053
+fpr_gap 0.063332
+auc_gap 0.013227
+auc_sens0 0.571200
+auc_sens1 0.557974
+decision_polarization 0.046363
+acc_sens0 0.647385
+f1_sens0 0.516761
+acc_sens1 0.684318
+f1_sens1 0.497747
+
+[RECOMMENDATION METRICS]
+Exposure_sens0 0.544408
+Exposure_sens1 0.455592
+Exposure_Disparity 0.088816
+Bias_Amplification 0.063564
+NDCG@10 0.903733
+parity_val: 0.05576339925905527
+equality_val: 0.0486915950239728
+ACC 0.656913
+AUCROC 0.563132
+F1 0.777544
+ACC_sens0 0.639907
+AUCROC_sens0 0.564936
+F1_sens0 0.759380
+ACC_sens1 0.675184
+AUCROC_sens1 0.557972
+F1_sens1 0.795896
+SP 0.055763
+EO 0.048692
+
+[Feature Map] Attempting to load real feature names...
+   Raw CSV Columns: 268
+   Filtered Feature Names: 255
+   Model Input Dimension: 255
+   [Success] Feature names aligned perfectly.
+
+--- Running Final Explanation & Audit Layer ---
+   [Info] Audit artifacts will be saved to: RE_model_audit/
+   [Feature Map] Using 255 feature names passed from Training.
+
+[Audit Selection] Randomly selected User ID: 65965
+
+==================================================
+EXPLANATION AUDIT FOR USER ID: 65965
+==================================================
+
+[1. STRUCTURE]
+   Direct Connection: User 65965 is connected to 22197.
+
+[2. SCORING]
+   Top Item (22197) Score: 0.9980
+
+[3. FAIRNESS IMPACT]
+   Homophily Ratio: 0.50
+
+[4. FEATURE ATTRIBUTION]
+   Top Features: {'ist do posilnovne': -0.03048832155764103, 'priatelky': -0.028026867657899857, 'dlhodoby seriozny vztah': 0.026579618453979492, 'spanie': 0.025724856182932854, 'cestovanie': -0.025256993249058723}
+
+[5. VISUALIZATION]
+   [Saved] Structural graph to RE_model_audit/structural_expl_user_65965.png
+   [Saved] Feature plot to RE_model_audit/feature_attrib_user_65965.png
+
+[6. LLM NARRATIVE (Llama 3.2)]
+   [LLM] Consulting Llama 3.2 for explanation... (this may take a few seconds)
+
+Here's a short explanation:
+
+The system has recommended item 22197 to user 65965 with high confidence, but we need to examine the reasons behind this recommendation. The direct connection between the two users plays a significant role in shaping the recommendation. However, we also have concerns about fairness. The recommended item belongs to the same Sensitive Group 0 as the user, which is essential to consider when making recommendations. Furthermore, the Homophily Ratio of 0.50 indicates that this recommendation may contribute to an echo chamber, where similar users are exposed to similar content.
+
+The feature attribution highlights that certain words like 'dlhodoby seriozny vztah' (which roughly translates to "serious relationship") and 'spanie' (likely referring to Spain) pushed the item up in the recommendation. On the other hand, features like 'ist do posilnovne', 'priatelky' (friends), and 'cestovanie' (traveling) pulled the item down. While these words provide insight into why the system recommended this item, we must be cautious about potential echo chambers that may form around similar users.
+
+It's essential to recognize that while the direct connection between users and the top features driving the recommendation are critical factors, the fairness concern surrounding homophily cannot be ignored. Our goal as an auditor is to ensure that our recommendation system not only provides relevant suggestions but also promotes diversity and reduces potential biases.
+==================================================
+
+   [Audit] Calculating global recommendation metrics for plot...
+   [LLM] Generating specialized reports (saving to disk)...
+   [Saved] Focused mitigation graph to RE_model_audit/bias_mitigation_graph.png
+   [Saved] Polarization graph to RE_model_audit/opinion_polarization_graph.png
+   [Dashboard] Exporting JSON data for user 65965...
+   [Dashboard] 5 JSON files saved successfully.
+Audit complete.

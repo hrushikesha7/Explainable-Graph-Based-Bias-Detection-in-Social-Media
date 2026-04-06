@@ -1,0 +1,29 @@
+{
+    "nodes": [
+        {
+            "id": 34563,
+            "group": 1,
+            "type": "target"
+        },
+        {
+            "id": 7578,
+            "group": 0,
+            "type": "neighbor"
+        },
+        {
+            "id": 34178,
+            "group": 1,
+            "type": "neighbor"
+        }
+    ],
+    "links": [
+        {
+            "source": 34563,
+            "target": 7578
+        },
+        {
+            "source": 34563,
+            "target": 34178
+        }
+    ]
+}
