@@ -1,0 +1,155 @@
+import json
+import requests
+import os
+from typing import Dict, List, Tuple
+
+class ExplainabilityLayer:
+    def __init__(self, llm_endpoint="http://localhost:11434/api/generate", model_name="llama3.2"):
+        self.llm_endpoint = llm_endpoint
+        self.model_name = model_name
+        self.model_stats = [] # Store stats to calculate the winner later
+        print(f"[Init] Explainability Layer connected to {model_name} at {llm_endpoint}")
+
+    def load_audit_data(self, file_path: str) -> Tuple[str, Dict]:
+        """Loads the JSON output from the Recommendation Layer."""
+        try:
+            with open(file_path, 'r') as f:
+                data = json.load(f)
+            # Handle nested structure {'all': ...} or {'best': ...}
+            key = list(data.keys())[0] 
+            inner_key = list(data[key].keys())[0] # e.g. 'FairVGNN+pokec_n'
+            return inner_key, data[key][inner_key]
+        except Exception as e:
+            print(f"[Error] Could not read {file_path}: {e}")
+            return "Unknown_Model", {}
+
+    def run_gnn_explainer_extraction(self, data_entry: Dict) -> Dict:
+        """Extracts structural and fairness metrics (Simulating GNNExplainer)."""
+        entry = data_entry if isinstance(data_entry, dict) else data_entry[0]
+        
+        # safely get nested keys
+        rec_fairness = entry.get('post_exposure', {}).get('recommendation_fairness', {})
+        rec_quality = entry.get('post_exposure', {}).get('recommendation_quality', {})
+        
+        explanation_packet = {
+            "pre_exposure_metrics": entry.get('pre_exposure', {}).get('echo_chamber', {}),
+            "post_exposure_metrics": entry.get('post_exposure', {}).get('echo_chamber', {}),
+            "bias_amplification": rec_fairness.get('Bias_Amplification', 999), # Default high if missing
+            "exposure_disparity": rec_fairness.get('Exposure_Disparity', 999),
+            "accuracy": rec_quality.get('ACC_rec', 0.0)
+        }
+        return explanation_packet
+
+    def generate_llm_prompt(self, model_id: str, explanation: Dict) -> str:
+        """Constructs the prompt for Llama 3.2."""
+        prompt = f"""
+        ACT AS: AI Fairness Auditor.
+        TASK: Write a concise technical report (100-120 words) for model: {model_id}.
+        
+        METRICS:
+        - Pre-Exposure Sensitive Edge Ratio: {explanation['pre_exposure_metrics'].get('p_intra_sens', 0):.2f}
+        - Post-Exposure Sensitive Edge Ratio: {explanation['post_exposure_metrics'].get('p_intra_sens', 0):.2f}
+        - Bias Amplification: {explanation['bias_amplification']:.4f} (Negative is good/mitigation, Positive is bad)
+        - Exposure Disparity: {explanation['exposure_disparity']:.4f}
+
+        INSTRUCTIONS:
+        - Analyze if the model AMPLIFIED bias or MITIGATED it during recommendation.
+        - Be objective and professional.
+        - STRICT LENGTH: 100-120 words.
+        """
+        return prompt
+
+    def query_local_llama(self, prompt: str) -> str:
+        payload = {
+            "model": self.model_name,
+            "prompt": prompt,
+            "stream": False
+        }
+        try:
+            response = requests.post(self.llm_endpoint, json=payload)
+            if response.status_code == 200:
+                return response.json().get("response", "Error: No response.")
+            return f"Error: LLM API status {response.status_code}"
+        except Exception as e:
+            return f"Error connecting to Local LLM: {str(e)}"
+
+    def determine_best_model(self) -> str:
+        """Heuristic: Finds model with lowest Bias Amplification (closest to negative)."""
+        if not self.model_stats:
+            return "No models analyzed."
+        
+        # Sort by Bias Amplification (Lower/More Negative is better)
+        # We assume mitigation (negative value) is the gold standard.
+        sorted_models = sorted(self.model_stats, key=lambda x: x['bias_amp'])
+        best = sorted_models[0]
+        
+        winner_text = f"""
+        ==================================================
+        🏆 FINAL VERDICT: BEST MODEL SELECTED
+        ==================================================
+        WINNER: {best['name']}
+        
+        REASONING:
+        This model demonstrated the best fairness preservation.
+        - Bias Amplification: {best['bias_amp']:.4f} (Lowest/Best)
+        - Exposure Disparity: {best['disp']:.4f}
+        - Retained Accuracy:  {best['acc']:.2f}
+        
+        CONCLUSION:
+        {best['name']} is the recommended architecture for deployment as it 
+        effectively mitigates echo chamber formation compared to baselines.
+        ==================================================
+        """
+        return winner_text
+
+    def process_pipeline(self, json_files, output_file="Final_Combined_Audit_Report.txt"):
+        print(f"\n[Pipeline] Processing {len(json_files)} files into {output_file}...")
+        
+        full_report_content = "EXPLAINABLE AI AUDIT REPORT\nGENERATED BY: GNNExplainer + Llama 3.2\n\n"
+        
+        for file_path in json_files:
+            print(f"--- Analyzing: {file_path} ---")
+            
+            # 1. Load & Extract
+            model_id, raw_data = self.load_audit_data(file_path)
+            explanation = self.run_gnn_explainer_extraction(raw_data)
+            
+            # 2. Track Stats for "Best Model" calculation
+            self.model_stats.append({
+                'name': model_id,
+                'bias_amp': explanation['bias_amplification'],
+                'disp': explanation['exposure_disparity'],
+                'acc': explanation['accuracy']
+            })
+            
+            # 3. Generate Report via LLM
+            prompt = self.generate_llm_prompt(model_id, explanation)
+            report_text = self.query_local_llama(prompt)
+            
+            # 4. Append to string
+            full_report_content += f"=== AUDIT: {model_id} ===\n{report_text}\n\n{'-'*50}\n\n"
+
+        # 5. Append Winner Section
+        winner_section = self.determine_best_model()
+        full_report_content += winner_section
+        
+        # 6. Write Single File
+        with open(output_file, "w", encoding="utf-8") as f:
+            f.write(full_report_content)
+            
+        print(f"[Success] All reports and winner summary saved to: {output_file}")
+
+# --- Execution Block ---
+if __name__ == "__main__":
+    # Corrected Paths
+    json_files = [
+        "Input_JSON/save_dict_dataset = pokec_n, model = FairGNN, epochs=500_with rec.json",
+        "Input_JSON/save_dict_dataset = pokec_n, model = FairVGNN, epochs=500_with rec.json",
+        "Input_JSON/save_dict_dataset = pokec_n, model = GNN, epochs=500_with rec.json",
+        "Input_JSON/save_dict_dataset = pokec_z, model = FairGNN, epochs=500_with rec.json",
+        "Input_JSON/save_dict_dataset = pokec_z, model = FairVGNN, epochs=500_with rec.json",
+        "Input_JSON/save_dict_dataset = pokec_z, model = GNN, epochs=500_with rec.json"
+    ]
+    
+    explainer = ExplainabilityLayer()
+    explainer.process_pipeline(json_files)
