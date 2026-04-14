@@ -21,7 +21,7 @@
   },
   "FairVGNN": {
     "pokec_z": {
-      "top_k": 5,
+      "top_k": 50,
       "alpha": 0.5
     },
     "pokec_n": {

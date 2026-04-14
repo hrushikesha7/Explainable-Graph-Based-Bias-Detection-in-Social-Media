@@ -222,7 +222,7 @@ if model_name == 'FairVGNN':
             d_epochs=5,
             c_epochs=10,
             g_epochs=10,
-            epochs=500,
+            epochs=30,
         )
         import scipy.sparse as sp
         from metrics_echo import echo_polar_metrics
@@ -254,7 +254,7 @@ if model_name == 'FairVGNN':
         print("\n[OPINION POLARIZATION] (from predicted probabilities):", op_stats)
 
         # 3) LEARNED graph echo chamber/polarization on kNN graph from embeddings
-        A_learned = knn_graph(emb_all, k=20, metric="cosine")
+        A_learned = knn_graph(emb_all, k=50, metric="cosine")
         echo_learned = echo_polar_metrics(A_learned, sens_np, labels=labels_np, yhat=yhat_all)
         print("\n[PRE-EXPOSURE METRICS:]")
         print("\n[LEARNED GRAPH - kNN(embeddings)] Echo/Polar stats:", echo_learned)
@@ -298,7 +298,7 @@ if model_name == 'FairVGNN':
         embeddings=emb_all,  # Use embeddings for cosine similarity-based recommendations
         sens=sens_np,        # sensitive attribute
         y_true=(y_true_np > 0).astype(float),    # optional: ground-truth labels for NDCG
-        top_k=10,            # you can adjust top-k
+        top_k=50,            # you can adjust top-k
         exclude_self=True,   # Exclude self from recommendations
         exclude_neighbors=True  # Exclude existing neighbors from recommendations
     )
@@ -357,7 +357,9 @@ elif model_name == 'FairGNN':
 
 
     time_start = time.time()
-    model = FairGNN(feats.shape[-1], acc=temp_acc, epoch=500, alpha=alpha, beta=beta).cuda()
+    device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
+    model = FairGNN(feats.shape[-1], acc=temp_acc, epoch=30, alpha=alpha, beta=beta).to(device)
+    # model = FairGNN(feats.shape[-1], acc=temp_acc, epoch=30, alpha=alpha, beta=beta).cuda()
     model.fit(adj, feats, labels, idx_train, idx_val, idx_test, sens, idx_train)
     
     # Echo chamber and polarization metrics
@@ -391,7 +393,7 @@ elif model_name == 'FairGNN':
     print("\n[OPINION POLARIZATION] (from predicted probabilities):", op_stats)
 
     # 3) LEARNED graph echo chamber/polarization on kNN graph from embeddings
-    A_learned = knn_graph(emb_all, k=20, metric="cosine")
+    A_learned = knn_graph(emb_all, k=50, metric="cosine")
     echo_learned = echo_polar_metrics(A_learned, sens_np, labels=labels_np, yhat=yhat_all)
     print("\n[PRE-EXPOSURE METRICS]:")
     print("\n[LEARNED GRAPH - kNN(embeddings)] Echo/Polar stats:", echo_learned)
@@ -436,7 +438,7 @@ elif model_name == 'FairGNN':
         embeddings=emb_all,  # Use embeddings for cosine similarity-based recommendations
         sens=sens_np,        # sensitive attribute
         y_true=(y_true_np > 0).astype(float),    # optional: ground-truth labels for NDCG
-        top_k=10,            # you can adjust top-k
+        top_k=50,            # you can adjust top-k
         exclude_self=True,   # Exclude self from recommendations
         exclude_neighbors=True  # Exclude existing neighbors from recommendations
     )
@@ -531,7 +533,7 @@ elif model_name == 'GNN':
     print("\n[OPINION POLARIZATION] (from predicted probabilities):", op_stats)
 
     # 3) LEARNED graph echo chamber/polarization on kNN graph from embeddings
-    A_learned = knn_graph(emb_all, k=20, metric="cosine")
+    A_learned = knn_graph(emb_all, k=50, metric="cosine")
     echo_learned = echo_polar_metrics(A_learned, sens_np, labels=labels_np, yhat=yhat_all)
     print("\n[PRE-EXPOSURE METRICS]:")
     print("\n[LEARNED GRAPH - kNN(embeddings)] Echo/Polar stats:", echo_learned)
@@ -575,7 +577,7 @@ elif model_name == 'GNN':
         embeddings=emb_all,  # Use embeddings for cosine similarity-based recommendations
         sens=sens_np,        # sensitive attribute
         y_true=(y_true_np > 0).astype(float),    # optional: ground-truth labels for NDCG
-        top_k=10,            # you can adjust top-k
+        top_k=50,            # you can adjust top-k
         exclude_self=True,   # Exclude self from recommendations
         exclude_neighbors=True  # Exclude existing neighbors from recommendations
     )

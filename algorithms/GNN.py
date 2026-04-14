@@ -195,6 +195,7 @@ class GNN(torch.nn.Module):
     def __init__(self, adj, features, labels, idx_train, idx_val, idx_test, sens, sens_idx, num_hidden=16, num_proj_hidden=16, lr=0.001, weight_decay=1e-5, drop_edge_rate_1=0.1, drop_edge_rate_2=0.1, drop_feature_rate_1=0.1, drop_feature_rate_2=0.1, encoder="gcn", sim_coeff=0.5, nclass=1, device="cuda"):
         super(GNN, self).__init__()
 
+        device = torch.device("mps" if torch.backends.mps.is_available() else "cpu") # added to run on MAC
         self.device = device
 
         #self.edge_index = convert.from_scipy_sparse_matrix(sp.coo_matrix(adj.to_dense().numpy()))[0]
@@ -255,6 +256,7 @@ class GNN(torch.nn.Module):
         par_2 = list(self.c1.parameters()) + list(self.encoder.parameters())
         self.optimizer_1 = optim.Adam(par_1, lr=lr, weight_decay=weight_decay)
         self.optimizer_2 = optim.Adam(par_2, lr=lr, weight_decay=weight_decay)
+
         self = self.to(device)
 
         self.features = features.to(device)

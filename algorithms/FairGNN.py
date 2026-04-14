@@ -25,7 +25,8 @@ class GCN(nn.Module):
 def accuracy(output, labels):
     output = output.squeeze()
     preds = (output>0).type_as(labels)
-    correct = preds.eq(labels).double()
+    # correct = preds.eq(labels).double()
+    correct = preds.eq(labels).float()  # added to run on MAC
     correct = correct.sum()
     return correct / len(labels)
 
@@ -168,7 +169,7 @@ class FairGNN(nn.Module):
 
 
         # with args
-
+        device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")    # added to run on MAC
         self = self.to(device)
         features = features.to(device)
         labels = labels.to(device)
@@ -188,7 +189,9 @@ class FairGNN(nn.Module):
         self.labels = labels
         self.sens = sens
 
-        self.edge_index = torch.tensor(g.to_dense().nonzero(), dtype=torch.long).t().cuda()
+        # self.edge_index = torch.tensor(g.to_dense().nonzero(), dtype=torch.long).t().cuda()
+        self.edge_index = torch.tensor(g.to_dense().nonzero(), dtype=torch.long).t().to(device)     # added to run on MAC
+
         self.val_loss = 0
         
         # Initialize echo chamber analysis variables (will be updated when best model is found)
