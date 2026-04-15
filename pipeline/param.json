@@ -1,0 +1,32 @@
+{
+  "GNN": {
+    "pokec_z": {
+      "num_hidden": 4,
+      "num_proj_hidden": 16
+    },
+    "pokec_n": {
+      "num_hidden": 32,
+      "num_proj_hidden": 64
+    }
+  },
+  "FairGNN": {
+    "pokec_z": {
+      "alpha": 4,
+      "beta": 0.01
+    },
+    "pokec_n": {
+      "alpha": 8,
+      "beta": 0.01
+    }
+  },
+  "FairVGNN": {
+    "pokec_z": {
+      "top_k": 50,
+      "alpha": 0.5
+    },
+    "pokec_n": {
+      "top_k": 5,
+      "alpha": 0.5
+    }
+  }
+}

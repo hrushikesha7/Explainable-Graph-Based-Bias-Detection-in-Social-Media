@@ -1,0 +1,42 @@
+[
+    {
+        "feature": "mam vazny vztah",
+        "attention_score": 0.9971616268157959
+    },
+    {
+        "feature": "priemerna",
+        "attention_score": 0.9970899820327759
+    },
+    {
+        "feature": "udrzujem vztahy s priatelmi",
+        "attention_score": 0.996880292892456
+    },
+    {
+        "feature": "divadlo",
+        "attention_score": 0.996829092502594
+    },
+    {
+        "feature": "relation_to_children_indicator",
+        "attention_score": 0.9968210458755493
+    },
+    {
+        "feature": "turistika",
+        "attention_score": 0.9967886209487915
+    },
+    {
+        "feature": "fajcim pravidelne",
+        "attention_score": 0.9967605471611023
+    },
+    {
+        "feature": "tancovanie",
+        "attention_score": 0.9967212080955505
+    },
+    {
+        "feature": "ist na koncert",
+        "attention_score": 0.9967004656791687
+    },
+    {
+        "feature": "cestovanie",
+        "attention_score": 0.9966853260993958
+    }
+]

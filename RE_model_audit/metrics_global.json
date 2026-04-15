@@ -1,7 +1,0 @@
-{
-    "fairness_gap_before": 0.043205370719364145,
-    "fairness_gap_after": 0.038056135177612305,
-    "improvement_percent": 11.918045039349732,
-    "mean_risk_group_0": 0.7693716883659363,
-    "mean_risk_group_1": 0.8074278235435486
-}
